@@ -1,0 +1,90 @@
+<?php include '_header.php'; 
+$userID = $_SESSION['userID'];
+
+?>
+
+<!-- Main Content -->
+<div class="main-content">
+    <section class="section">
+        <div class="section-header">
+            <h1>Top Navigation</h1>
+            <div class="section-header-breadcrumb">
+                <div class="breadcrumb-item active"><a href="home.php">Home</a></div>
+                <div class="breadcrumb-item"><a href="bookmark.php">Bookmark</a></div>
+                <div class="breadcrumb-item">MyBookmark</div>
+            </div>
+        </div>
+
+        <div class="section-body">
+            <h2 class="section-title">My Bookmark</h2>
+
+            <div class="row">
+                <?php
+                // Jumlah item per halaman
+                $items_per_page = 12;
+
+                // Halaman saat ini (jika tidak diset, default adalah halaman 1)
+                $current_page = isset($_GET['page']) ? $_GET['page'] : 1;
+
+                // Perhitungan offset
+                $offset = ($current_page - 1) * $items_per_page;
+
+                // Query untuk mendapatkan jumlah total buku yang di-bookmark oleh pengguna
+                $total_books_query = mysqli_query($conn, "SELECT COUNT(*) as total FROM bookmark WHERE userID = '$userID'");
+                $total_books = mysqli_fetch_assoc($total_books_query)['total'];
+
+                // Jumlah halaman
+                $total_pages = ceil($total_books / $items_per_page);
+
+                // Query untuk mendapatkan data buku yang di-bookmark oleh pengguna dengan limit dan offset
+                $query = "SELECT buku.* FROM buku INNER JOIN bookmark ON buku.bukuID = bookmark.bukuID WHERE bookmark.userID = '$userID' LIMIT $offset, $items_per_page";
+                $result = mysqli_query($conn, $query);
+
+                // Memeriksa apakah ada data buku
+                if (mysqli_num_rows($result) > 0) {
+                    while ($row = mysqli_fetch_assoc($result)) {
+                        // Memeriksa panjang sinopsis
+                        $sinopsis = $row['sinopsis'];
+                        if (strlen($sinopsis) > 100) {
+                            $sinopsis = substr($sinopsis, 0, 100) . "...";
+                        }
+
+                        // Menampilkan data buku
+                        ?>
+                        <div class="col-12 col-sm-6 col-md-6 col-lg-3">
+                            <article class="article shadow">
+                                <div class="article-header">
+                                    <div class="article-image" data-background="assets/img/buku/<?php echo $row['gambar']; ?>"></div>
+                                    <div class="article-title">
+                                        <h2><a href="#"><?php echo $row['namaBuku']; ?></a></h2>
+                                    </div>
+                                </div>
+                                <div class="article-details">
+                                    <p><?php echo $sinopsis; ?></p>
+                                    <div class="article-cta">
+                                        <a href="detail.php?buku=<?= $row['bukuID'] ?>" class="btn btn-primary">Details</a>
+                                    </div>
+                                </div>
+                            </article>
+                        </div>
+                        <?php
+                    }
+                } else {
+                    echo '<div class="col-md-10 justify-content-center">';
+                    echo '<div class="alert alert-danger alert-dismissible show fade">
+                    <div class="alert-body">
+                        <button class="close" data-dismiss="alert">
+                            <span>&times;</span>
+                        </button>
+                        Anda belum memiliki bookmark.
+                    </div>
+                </div>'; 
+                echo '</div>';           
+                }
+                ?>
+            </div>
+        </div>
+    </section>
+</div>
+
+<?php include '_footer.php'; ?>

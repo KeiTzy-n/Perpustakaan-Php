@@ -1,0 +1,17 @@
+.rating-stars {
+    font-size: 3rem; /* Ukuran font menjadi 3rem */
+  }
+  
+  .star {
+    cursor: pointer;
+    color: #46434326; /* Warna bintang sebelum dihover */
+    padding: 0.2rem; /* Tambahkan padding agar bintang tidak terlalu dekat */
+    font-size: 2.5rem; /* Ukuran font untuk bintang */
+    display: inline-block; /* Tata letak inline untuk simbol bintang */
+    line-height: 1; /* Tinggi baris 1 agar simbol berada di tengah vertikal */
+  }
+  
+  .star:hover {
+    color: #f90; /* Warna bintang saat dihover */
+  }
+  
